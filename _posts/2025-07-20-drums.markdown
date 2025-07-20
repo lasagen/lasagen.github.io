@@ -2,7 +2,7 @@
 layout: post
 title:  "Playing with /dev/random"
 date:   2025-07-20 00:26:53 -0400
-categories: jekyll update
+categories: 
 ---
 
 I saw [this video](https://www.youtube.com/watch?v=C04FQF0jUAw) by Deficas a few days ago and haven't been able to stop thinking about it. I wanted to dig in deeper to understand some of the limits and possibilities of this silly method of playing noise from the command line.
