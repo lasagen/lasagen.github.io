@@ -57,7 +57,7 @@
 
 <p>You can play normal <code class="language-plaintext highlighter-rouge">.wav</code> and <code class="language-plaintext highlighter-rouge">.mp3</code> sound files with it - it reads metadata such as the sample rate from the file headers - but you can also use it to play <strong>anything</strong> as if it’s a sound file.</p>
 
-<p>For example, I can create a repetitive text file, play it with aplay, and listen to its nice constant tone:</p>
+<p>For example, I can create a repetitive text file, play it with <code class="language-plaintext highlighter-rouge">aplay</code>, and listen to its nice constant tone:</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>printf 'something%.0s' {1..1000} &gt; example.txt
 aplay example.txt -r 2000

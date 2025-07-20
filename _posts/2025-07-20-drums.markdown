@@ -15,7 +15,7 @@ I saw [this video](https://www.youtube.com/watch?v=C04FQF0jUAw) by Deficas a few
 
 You can play normal `.wav` and `.mp3` sound files with it - it reads metadata such as the sample rate from the file headers - but you can also use it to play **anything** as if it's a sound file.
 
-For example, I can create a repetitive text file, play it with aplay, and listen to its nice constant tone:
+For example, I can create a repetitive text file, play it with `aplay`, and listen to its nice constant tone:
 
 ```
 printf 'something%.0s' {1..1000} > example.txt
