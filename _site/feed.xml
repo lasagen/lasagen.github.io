@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2025-07-20T02:31:42-04:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">clark pohl</title><subtitle>I like computers, learning stuff, and being alive.</subtitle><entry><title type="html">Playing with /dev/random</title><link href="http://localhost:4000/jekyll/update/2025/07/20/test.html" rel="alternate" type="text/html" title="Playing with /dev/random" /><published>2025-07-20T00:26:53-04:00</published><updated>2025-07-20T00:26:53-04:00</updated><id>http://localhost:4000/jekyll/update/2025/07/20/test</id><content type="html" xml:base="http://localhost:4000/jekyll/update/2025/07/20/test.html"><![CDATA[<p>I saw <a href="https://www.youtube.com/watch?v=C04FQF0jUAw">this video</a> by Deficas a few days ago and haven’t been able to stop thinking about it. I wanted to dig in deeper to understand some of the limits and possibilities of this silly method of playing noise from the command line.</p>
+
+<p><code class="language-plaintext highlighter-rouge">aplay</code> is a sound player (and recorder) for the ALSA sound card driver.</p>
+
+<p><code class="language-plaintext highlighter-rouge">-r</code> sets the sample rate, which will be interpreted as a value in <strong>hertz</strong> if you give it a number in the 2000-192000 range, in <strong>kilohertz</strong> if in the 0-300 range, or rejected as an invalid value otherwise.</p>
+
+<p><code class="language-plaintext highlighter-rouge">-s</code> sets the number of PCM frames transmitted before interrupt.</p>
+
+<p>You can play normal <code class="language-plaintext highlighter-rouge">.wav</code> and <code class="language-plaintext highlighter-rouge">.mp3</code> sound files with it - it reads metadata such as the sample rate from the file headers - but you can also use it to play <strong>anything</strong> as if it’s a sound file.</p>
+
+<p>For example, I can create a repetitive text file, play it with aplay, and listen to its nice constant tone:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>printf 'something%.0s' {1..1000} &gt; example.txt
+aplay example.txt -r 2000
+</code></pre></div></div>
+<p>(Experiment with different sample rate values.)</p>
+
+<p><code class="language-plaintext highlighter-rouge">/dev/random</code> is a special file on Linux systems that provides random numbers. There is a lot of interesting info available about how it’s seeded with entropy, the differences between it and <code class="language-plaintext highlighter-rouge">/dev/urandom</code>, and its cryptographic benefits and weaknesses, but for this purpose it only matters that <code class="language-plaintext highlighter-rouge">/dev/random</code> is a noise source - we can use short samples of it for drum sounds. For no reason.</p>
+
+<p>I was vaguely thinking about the odd rhythms in <a href="https://www.youtube.com/watch?v=suT4ZGED7LQ">You and Shayna v1</a> on the Venetian Snares album Traditional Synthesizer Music, so I made the world’s most tiny piece of a part I remembered from it:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>#!/bin/bash
+
+rate=3000;
+
+for ((; ;)) do
+	for ((i = 0; i &lt;= 3; i++)) do
+		aplay /dev/random -r ${rate} -s 300;
+	done;
+	aplay /dev/random -r 2000 -s 100;
+	aplay /dev/random -r 3000 -s 100;
+	aplay /dev/random -r 4000 -s 100;
+	let "rate=rate - 100";
+done
+</code></pre></div></div>
+<p>Note that when the <code class="language-plaintext highlighter-rouge">aplay</code> command within the loop is decremented enough that it becomes a bad sample rate value, that part of… what can generously be called the “beat” is just ignored, with the other <code class="language-plaintext highlighter-rouge">aplay</code> commands outside the loop being played normally.</p>
+
+<p>I was surprised that after we’d been in “bad speed value” territory, the loop section came back, this time with painfully high values. Not looking closely at the point where this started, I initially wondered if it was due to something like integer overflow, but reading the <code class="language-plaintext highlighter-rouge">-r</code> section of the man page gave me the info that the value is interpreted in kHz when the argument is in the 0-300 range.</p>
+
+<p>Initially, I wrote this using <code class="language-plaintext highlighter-rouge">-s</code>, blindly copying the video. But after running the exact same script again the next day, I noticed that the durations of each <code class="language-plaintext highlighter-rouge">aplay</code> command were different from before! <code class="language-plaintext highlighter-rouge">-s</code> only specifies a number of <strong>PCM frames</strong>, not strictly a duration.</p>
+
+<p><code class="language-plaintext highlighter-rouge">-d</code>, it turns out, sets the duration in <strong>seconds</strong> to transmit before interrupt, and it’s mutually exclusive with <code class="language-plaintext highlighter-rouge">-s</code>. Sadly Bash doesn’t support floating-point numbers natively, so I can’t give <code class="language-plaintext highlighter-rouge">-d</code> anything shorter than a second - not really suited to drums. Maybe there’s a better option than either of these 2.</p>
+
+<p>Making sounds purely from the command line makes me think about livecoding again - I’ve heard of <a href="https://strudel.cc/">Strudel</a> but have yet to play around with it. I’ve messed around with the modular synth simulator <a href="https://vcvrack.com/">VCV Rack</a> but get overwhelmed by all the visual information pretty quickly; it’s much easier for me to think about complex systems interacting with each other when these systems and interactions are represented in code. It’s possible that I can train myself to think about VCV Rack modules more abstractly, though…</p>]]></content><author><name></name></author><category term="jekyll" /><category term="update" /><summary type="html"><![CDATA[I saw this video by Deficas a few days ago and haven’t been able to stop thinking about it. I wanted to dig in deeper to understand some of the limits and possibilities of this silly method of playing noise from the command line.]]></summary></entry></feed>
